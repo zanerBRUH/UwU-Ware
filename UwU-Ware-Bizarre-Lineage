@@ -48,14 +48,14 @@ end
 local plr = Players.LocalPlayer
 
 if plr:GetAttribute("Loaded") == false or plr:GetAttribute("Loaded") == nil then
-							repeat
-								task.wait()
-								RS.requests.character.spawn:FireServer()
-								if plr.PlayerGui:FindFirstChild("Main Menu") then
-									plr.PlayerGui["Main Menu"]:Destroy()
-								end
-							until plr:GetAttribute("Loaded") == true
-						end
+	repeat
+		task.wait()
+		RS.requests.character.spawn:FireServer()
+		if plr.PlayerGui:FindFirstChild("Main Menu") then
+			plr.PlayerGui["Main Menu"]:Destroy()
+		end
+	until plr:GetAttribute("Loaded") == true
+end
 
 local plrData = plr.PlayerData
 local slotData = plrData.SlotData
@@ -8394,7 +8394,6 @@ connections["ReduceClutter"] = function()
 end
 connections["ReduceClutter"]()
 
-
 local Window = Library:Window({
 	Name = "AniPixels",
 	SubName = "UwU",
@@ -8487,8 +8486,6 @@ do
 					end
 					while getgenv().AutoRaid == true do
 						task.wait()
-
-						
 
 						for _, liveEnemy in workspace.Live:GetChildren() do
 							if
