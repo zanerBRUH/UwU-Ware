@@ -8472,6 +8472,7 @@ do
 
 						if plr:GetAttribute("Loaded") == false or plr:GetAttribute("Loaded") == nil then
 							repeat
+								task.wait()
 								RS.requests.character.spawn:FireServer()
 								if plr.PlayerGui:FindFirstChild("Main Menu") then
 									plr.PlayerGui["Main Menu"]:Destroy()
