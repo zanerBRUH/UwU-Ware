@@ -8475,6 +8475,7 @@ do
 							if plr.PlayerGui:FindFirstChild("Main Menu") then
 								plr.PlayerGui["Main Menu"]:Destroy()
 							end
+							return
 						end
 
 						for _, liveEnemy in workspace.Live:GetChildren() do
@@ -8980,8 +8981,9 @@ getgenv().Library = Library
 Character = plr.Character or plr.CharacterAdded:Wait()
 HRP = Character:WaitForChild("HumanoidRootPart")
 
+local TeleportCheck = false
 Players.LocalPlayer.OnTeleport:Connect(function(State)
-	if queueteleport then
+	if queueteleport and TeleportCheck == false then
 		TeleportCheck = true
 		queueteleport(
 			"loadstring(game:HttpGet('https://raw.githubusercontent.com/zanerBRUH/UwU-Ware/refs/heads/main/UwU-Ware-Bizarre-Lineage'))()"
