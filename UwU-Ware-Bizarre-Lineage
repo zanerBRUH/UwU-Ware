@@ -9,6 +9,7 @@ end)
 if not game:IsLoaded() then
 	game.Loaded:Wait()
 end
+print("game loaded")
 
 function missing(t, f, fallback)
 	if type(f) == t then
@@ -24,6 +25,8 @@ sethidden = missing("function", sethiddenproperty or set_hidden_property or set_
 gethidden = missing("function", gethiddenproperty or get_hidden_property or get_hidden_prop)
 queueteleport =
 	missing("function", queue_on_teleport or (syn and syn.queue_on_teleport) or (fluxus and fluxus.queue_on_teleport))
+
+print("UNC")
 
 local Library
 local Workspace = game:GetService("Workspace")
@@ -8242,6 +8245,7 @@ end
 local RS = game:GetService("ReplicatedStorage")
 local connections = {}
 
+print("Pass functions")
 function Teleport(ChosenCFrame)
 	if typeof(ChosenCFrame) == "Instance" and ChosenCFrame:IsA("Model") then
 		print("Model")
@@ -8369,6 +8373,7 @@ function autoSell()
 	RS.requests.general.SellItem:FireServer(unpack({ selling }))
 end
 
+print("Creating window")
 connections["ReduceClutter"] = function()
 	for _, model in workspace:GetChildren() do
 		if model.Name == "Model" and #model:GetChildren() == 0 then
@@ -8377,6 +8382,7 @@ connections["ReduceClutter"] = function()
 	end
 end
 connections["ReduceClutter"]()
+
 
 local Window = Library:Window({
 	Name = "AniPixels",
@@ -8464,6 +8470,7 @@ do
 			getgenv().AutoRaid = Value
 			if Value == true then
 				connections["AutoRaid"] = task.spawn(function()
+					print("Raid func")
 					if game.PlaceId ~= 74747090658891 then
 						return
 					end
