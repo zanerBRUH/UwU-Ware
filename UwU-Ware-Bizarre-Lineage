@@ -8471,11 +8471,12 @@ do
 						task.wait()
 
 						if plr:GetAttribute("Loaded") == false or plr:GetAttribute("Loaded") == nil then
-							RS.requests.character.spawn:FireServer()
-							if plr.PlayerGui:FindFirstChild("Main Menu") then
-								plr.PlayerGui["Main Menu"]:Destroy()
-							end
-							return
+							repeat
+								RS.requests.character.spawn:FireServer()
+								if plr.PlayerGui:FindFirstChild("Main Menu") then
+									plr.PlayerGui["Main Menu"]:Destroy()
+								end
+							until plr:GetAttribute("Loaded") == true
 						end
 
 						for _, liveEnemy in workspace.Live:GetChildren() do
