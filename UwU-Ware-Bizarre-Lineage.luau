@@ -21,8 +21,6 @@ end
 cloneref = missing("function", cloneref, function(...)
 	return ...
 end)
-sethidden = missing("function", sethiddenproperty or set_hidden_property or set_hidden_prop)
-gethidden = missing("function", gethiddenproperty or get_hidden_property or get_hidden_prop)
 queueteleport =
 	missing("function", queue_on_teleport or (syn and syn.queue_on_teleport) or (fluxus and fluxus.queue_on_teleport))
 
@@ -32,14 +30,14 @@ local Library
 local Workspace = game:GetService("Workspace")
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
-local RS = game:GetService("ReplicatedStorage")
-local HttpService = game:GetService("HttpService")
 local RunService = game:GetService("RunService")
 local CoreGui = cloneref and cloneref(game:GetService("CoreGui")) or game:GetService("CoreGui")
 local HttpService = game:GetService("HttpService")
 local TweenService = game:GetService("TweenService")
 local Lighting = game:GetService("Lighting")
 local VirtualUser = game:GetService("VirtualUser")
+local RS = game:GetService("ReplicatedStorage")
+local connections = {}
 
 gethui = gethui or function()
 	return CoreGui
@@ -48,7 +46,10 @@ end
 local plr = Players.LocalPlayer
 
 if plr:GetAttribute("Loaded") == false or plr:GetAttribute("Loaded") == nil then
-	repeat task.wait() until not plr.PlayerGui:FindFirstChild("Logo_Loader")
+	task.wait(5)
+	repeat
+		task.wait()
+	until not plr.PlayerGui:FindFirstChild("Logo_Loader")
 	repeat
 		task.wait()
 		RS.requests.character.spawn:FireServer()
@@ -8254,9 +8255,6 @@ do
 	end
 end
 
-local RS = game:GetService("ReplicatedStorage")
-local connections = {}
-
 print("Pass functions")
 function Teleport(ChosenCFrame)
 	if typeof(ChosenCFrame) == "Instance" and ChosenCFrame:IsA("Model") then
@@ -8996,7 +8994,7 @@ Players.LocalPlayer.OnTeleport:Connect(function(State)
 	if queueteleport and TeleportCheck == false then
 		TeleportCheck = true
 		queueteleport(
-			"loadstring(game:HttpGet('https://raw.githubusercontent.com/zanerBRUH/UwU-Ware/refs/heads/main/UwU-Ware-Bizarre-Lineage'))()"
+			"loadstring(game:HttpGet('https://raw.githubusercontent.com/zanerBRUH/UwU-Ware/refs/heads/main/UwU-Ware-Bizarre-Lineage.lua'))()"
 		)
 	end
 end)

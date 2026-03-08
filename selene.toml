@@ -1,0 +1,4 @@
+std = "roblox"
+[lints]
+unscoped_variables = "allow"
+global_usage = "allow"
