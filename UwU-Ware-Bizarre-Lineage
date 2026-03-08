@@ -46,6 +46,17 @@ gethui = gethui or function()
 end
 
 local plr = Players.LocalPlayer
+
+if plr:GetAttribute("Loaded") == false or plr:GetAttribute("Loaded") == nil then
+							repeat
+								task.wait()
+								RS.requests.character.spawn:FireServer()
+								if plr.PlayerGui:FindFirstChild("Main Menu") then
+									plr.PlayerGui["Main Menu"]:Destroy()
+								end
+							until plr:GetAttribute("Loaded") == true
+						end
+
 local plrData = plr.PlayerData
 local slotData = plrData.SlotData
 local Character = plr.Character
@@ -8477,15 +8488,7 @@ do
 					while getgenv().AutoRaid == true do
 						task.wait()
 
-						if plr:GetAttribute("Loaded") == false or plr:GetAttribute("Loaded") == nil then
-							repeat
-								task.wait()
-								RS.requests.character.spawn:FireServer()
-								if plr.PlayerGui:FindFirstChild("Main Menu") then
-									plr.PlayerGui["Main Menu"]:Destroy()
-								end
-							until plr:GetAttribute("Loaded") == true
-						end
+						
 
 						for _, liveEnemy in workspace.Live:GetChildren() do
 							if
