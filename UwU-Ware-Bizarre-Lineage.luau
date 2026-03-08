@@ -8297,6 +8297,9 @@ function autoFarmEnemy(enemy)
 	local AutoPvEBoard = getgenv().AutoPvEBoard
 	local AutoQuest = getgenv().AutoQuest
 
+	Character = plr.Character or plr.CharacterAdded:Wait()
+	HRP = Character:WaitForChild("HumanoidRootPart")
+
 	while
 		enemy:FindFirstChild("Humanoid")
 		and enemy.Humanoid.Health > 0
