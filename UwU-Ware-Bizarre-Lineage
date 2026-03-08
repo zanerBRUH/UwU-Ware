@@ -48,6 +48,7 @@ end
 local plr = Players.LocalPlayer
 
 if plr:GetAttribute("Loaded") == false or plr:GetAttribute("Loaded") == nil then
+	repeat task.wait() until not plr.PlayerGui:FindFirstChild("Logo_Loader")
 	repeat
 		task.wait()
 		RS.requests.character.spawn:FireServer()
