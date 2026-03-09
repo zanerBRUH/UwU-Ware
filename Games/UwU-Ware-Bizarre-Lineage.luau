@@ -255,6 +255,8 @@ do
 		if not isfolder(Value) then
 			makefolder(Value)
 		end
+		if string.find(Value, ".txt") and not isfile(Value) then
+		end
 	end
 
 	-- Tweening
