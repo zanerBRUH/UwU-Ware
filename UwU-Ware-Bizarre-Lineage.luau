@@ -946,6 +946,10 @@ do
 		return Success, Result
 	end
 
+	Library.SetAutoLoadConfig = function(self, Config) end
+
+	Library.AutoLoadConfig = function(self, Config) end
+
 	Library.DeleteConfig = function(self, Config)
 		if isfile(Library.Folders.Configs .. "/" .. Config) then
 			delfile(Library.Folders.Configs .. "/" .. Config)
@@ -8183,6 +8187,7 @@ do
 		do
 			local ConfigName
 			local ConfigSelected
+			local AutoConfigSelected
 
 			local ConfigsDropdown = ConfigsSection:Listbox({
 				Flag = "ConfigsList",
@@ -8994,7 +8999,7 @@ HRP = Character:WaitForChild("HumanoidRootPart")
 
 local TeleportCheck = false
 Players.LocalPlayer.OnTeleport:Connect(function(State)
-	if queueteleport and TeleportCheck == false then
+	if TeleportCheck == false then
 		TeleportCheck = true
 		queueteleport(
 			"https://raw.githubusercontent.com/zanerBRUH/UwU-Ware/refs/heads/main/UwU-Ware-Bizarre-Lineage.luau'))()"
