@@ -1,77 +1,137 @@
+--//Services
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Http = game:GetService("HttpService")
+
+--//
+local plr = Players.LocalPlayer
+local character
+local humanoid
+local hrp
+
+--// FUNCTIONS \\--
+function Teleport(ChosenCFrame)
+	if typeof(ChosenCFrame) == "Instance" and ChosenCFrame:IsA("Model") then
+		if ChosenCFrame.PrimaryPart then
+			ChosenCFrame = ChosenCFrame.PrimaryPart.CFrame
+		else
+			ChosenCFrame = ChosenCFrame:FindFirstAncestorOfClass("Part")
+		end
+	elseif typeof(ChosenCFrame) == "Instance" and ChosenCFrame:IsA("BasePart") then
+		ChosenCFrame = ChosenCFrame.CFrame
+	end
+	HRP.CFrame = ChosenCFrame
+end
+
+--// LIBRARY \\--
 local library = loadstring(
-	game:HttpGet("https://raw.githubusercontent.com/i77lhm/Libraries/refs/heads/main/Millenium/Library.lua")
+	game:HttpGet("https://raw.githubusercontent.com/zanerBRUH/UwU-Ware/refs/heads/main/Libraries/Millenium.lua")
 )()
-
---[[
-  This ui uses a column way of creating holders for sections, its a bit confusing for newbies so heres an easy explanation:
-  Each column is how much sections sideways you can have, eg normal menus have only two however you can have 3 or 4 or 1 with this library.
-  There is alot of customisability with this library which made it very high in demand.
-
-  Also I haven't even got a clue how this got leaked since loads of people had it.
-]]
-
 local window = library:window({ name = "UwU", suffix = "-Ware", gameInfo = "Roblox: Bizarre Lineage" })
 
+--// GENERAL \\--
 window:seperator({ name = "General" })
-local farmsTab, questsTab, settingsTab = window:tab({ name = "Main", tabs = { "Farms", "Quests", "Settings" } })
+local farmsTab, itemsTab = window:tab({ name = "Main", tabs = { "Farms", "Items" } })
 
---//Farms
+--	//Farms
 do
-	local column = farmsTab:column({})
-	local section = column:section({ name = "Farms", default = true, toggle = false })
-	section:label({ name = "UwU, nuzzly farms :3", info = "UwU, nuzzly farms :3" })
+	local farmColumn = farmsTab:column({})
+	local farmSection = farmColumn:section({ name = "Farms", default = true, toggle = false })
+	farmSection:label({ name = "UwU, nuzzly farms :3", info = "UwU, nuzzly farms :3" })
 
 	local page = farmsTab:sub_tab({ order = -10000, size = 3 }) -- -1 sets it to the top
-
-	for _ = 1, 2 do
+	--		//Missions
+	do
 		local column = page:column({})
 		local section = column:section({ name = "General", default = true })
 		section:toggle({
-			name = "Enable ESP",
+			name = "Auto Tracked Quest",
+			seperator = false,
+			callback = function(bool)
+				print(bool)
+			end,
+		})
+		section:button({
+			name = "TP to Quest",
+			seperator = true,
+			callback = function()
+				Teleport(workspace.Effects.questbrick.questbrick.CFrame * CFrame.new(0, 0, 5))
+			end,
+		})
+		section:toggle({
+			name = "Auto PvE Board",
 			seperator = true,
 			callback = function(bool)
 				print(bool)
 			end,
 		})
-		section:toggle({ name = "Through walls", seperator = true })
-		local toggle = section:toggle({ name = "Shared ESP", seperator = true }):colorpicker({})
-
-		-- Sub Section Example
-		local toggle = section:toggle({ name = "Name", seperator = true })
-		toggle:colorpicker({})
-		local sub_section = toggle:settings({})
-		sub_section:toggle({ name = "Show Display Names", seperator = true })
-		sub_section:dropdown({
-			name = "Font Name",
-			items = { "ProggyTiny", "MonoSpace", "Tahoma" },
-			default = "MonoSpace",
+		section:toggle({
+			name = "Auto Gang Contracts",
 			seperator = true,
-		})
-		sub_section:colorpicker({ name = "Another Colorpicker why not", seperator = true })
-		sub_section:keybind({
-			name = "Keybind",
 			callback = function(bool)
 				print(bool)
 			end,
-			info = "Hello there this is a paragraph.. adawdawdawdHello there this is a paragraph.. adawdawdawdHello there this is a paragraph.. adawdawdawdHello there this is a paragraph.. adawdawdawd\nextra info here ig",
 		})
-		--
-
-		section
-			:toggle({
-				name = "Weapon",
-				seperator = true,
-				info = "Hello there this is a paragraph.. adawdawdawdHello there this is a paragraph.. adawdawdawdHello there this is a paragraph.. adawdawdawdHello there this is a paragraph.. adawdawdawd\nextra info here ig",
-			})
-			:colorpicker({})
-		section:dropdown({
-			name = "Flags",
-			items = { "Scoped", "Flashed", "Knocked", "Touched" },
-			default = { "Scoped", "Flashed", "Knocked" },
-			multi = true,
+		section:toggle({
+			name = "Auto World Event",
+			seperator = true,
+			callback = function(bool)
+				print(bool)
+			end,
+		})
+		local farmEnemyToggle = section:toggle({
+			name = "Auto Farm Enemy",
+			seperator = true,
+			callback = function(bool)
+				print(bool)
+			end,
+		})
+		local FETSS = farmEnemyToggle:settings({})
+		FETSS:list({
+			name = "Enemies",
+			items = { "1", "2", "3" },
+			default = "N/A",
 			seperator = true,
 		})
-		section:toggle({ name = "Other Shit", seperator = false }):colorpicker({})
+		-- section:toggle({ name = "Through walls", seperator = true })
+		-- local toggle = section:toggle({ name = "Shared ESP", seperator = true }):colorpicker({})
+
+		-- -- Sub Section Example
+		-- local toggle = section:toggle({ name = "Name", seperator = true })
+		-- toggle:colorpicker({})
+		-- local sub_section = toggle:settings({})
+		-- sub_section:toggle({ name = "Show Display Names", seperator = true })
+		-- sub_section:dropdown({
+		-- 	name = "Font Name",
+		-- 	items = { "ProggyTiny", "MonoSpace", "Tahoma" },
+		-- 	default = "MonoSpace",
+		-- 	seperator = true,
+		-- })
+		-- sub_section:colorpicker({ name = "Another Colorpicker why not", seperator = true })
+		-- sub_section:keybind({
+		-- 	name = "Keybind",
+		-- 	callback = function(bool)
+		-- 		print(bool)
+		-- 	end,
+		-- 	info = "Hello there this is a paragraph.. adawdawdawdHello there this is a paragraph.. adawdawdawdHello there this is a paragraph.. adawdawdawdHello there this is a paragraph.. adawdawdawd\nextra info here ig",
+		-- })
+		-- --
+
+		-- section
+		-- 	:toggle({
+		-- 		name = "Weapon",
+		-- 		seperator = true,
+		-- 		info = "Hello there this is a paragraph.. adawdawdawdHello there this is a paragraph.. adawdawdawdHello there this is a paragraph.. adawdawdawdHello there this is a paragraph.. adawdawdawd\nextra info here ig",
+		-- 	})
+		-- 	:colorpicker({})
+		-- section:dropdown({
+		-- 	name = "Flags",
+		-- 	items = { "Scoped", "Flashed", "Knocked", "Touched" },
+		-- 	default = { "Scoped", "Flashed", "Knocked" },
+		-- 	multi = true,
+		-- 	seperator = true,
+		-- })
+		-- section:toggle({ name = "Other Shit", seperator = false }):colorpicker({})
 	end
 end
 

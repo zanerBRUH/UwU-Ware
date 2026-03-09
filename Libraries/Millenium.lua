@@ -1427,14 +1427,10 @@ function library:section(properties)
 				{ BackgroundColor3 = bool and themes.preset.accent or rgb(50, 50, 50) },
 				Enum.EasingStyle.Quad
 			)
-			library:tween(
-				items["toggle_circle"],
-				{
-					BackgroundColor3 = bool and rgb(255, 255, 255) or rgb(86, 86, 88),
-					Position = bool and dim2(1, -14, 0, 2) or dim2(0, 2, 0, 2),
-				},
-				Enum.EasingStyle.Quad
-			)
+			library:tween(items["toggle_circle"], {
+				BackgroundColor3 = bool and rgb(255, 255, 255) or rgb(86, 86, 88),
+				Position = bool and dim2(1, -14, 0, 2) or dim2(0, 2, 0, 2),
+			}, Enum.EasingStyle.Quad)
 			library:tween(items["fade"], { BackgroundTransparency = bool and 1 or 0.8 }, Enum.EasingStyle.Quad)
 		end
 	end
@@ -1681,14 +1677,10 @@ function library:toggle(options)
 				{ BackgroundColor3 = bool and themes.preset.accent or rgb(50, 50, 50) },
 				Enum.EasingStyle.Quad
 			)
-			library:tween(
-				items["circle"],
-				{
-					BackgroundColor3 = bool and rgb(255, 255, 255) or rgb(86, 86, 88),
-					Position = bool and dim2(1, -14, 0, 2) or dim2(0, 2, 0, 2),
-				},
-				Enum.EasingStyle.Quad
-			)
+			library:tween(items["circle"], {
+				BackgroundColor3 = bool and rgb(255, 255, 255) or rgb(86, 86, 88),
+				Position = bool and dim2(1, -14, 0, 2) or dim2(0, 2, 0, 2),
+			}, Enum.EasingStyle.Quad)
 		end
 
 		cfg.callback(bool)
@@ -2791,45 +2783,25 @@ function library:colorpicker(options)
 
 		-- Ok so quick story, should I cache any of this? no...?? anyways I know this code is very bad but its your fault for buying a ui with animations (on a serious note im too lazy to make this look nice)
 		-- Also further note, yeah I kind of did this scale_factor * size-valuesize.plane because then I would have to do tomfoolery to make it clip properly.
-		library:tween(
-			items["hue_picker"],
-			{
-				Position = dim2(
-					0,
-					(items["hue_gradient"].AbsoluteSize.X - items["hue_picker"].AbsoluteSize.X) * h,
-					0.5,
-					0
-				),
-			},
-			Enum.EasingStyle.Linear,
-			0.05
-		)
-		library:tween(
-			items["alpha_picker"],
-			{
-				Position = dim2(
-					0,
-					(items["alpha_gradient"].AbsoluteSize.X - items["alpha_picker"].AbsoluteSize.X) * (1 - a),
-					0.5,
-					0
-				),
-			},
-			Enum.EasingStyle.Linear,
-			0.05
-		)
-		library:tween(
-			items["satvalpicker"],
-			{
-				Position = dim2(
-					0,
-					s * (items["saturation_holder"].AbsoluteSize.X - items["satvalpicker"].AbsoluteSize.X),
-					1,
-					1 - v * (items["saturation_holder"].AbsoluteSize.Y - items["satvalpicker"].AbsoluteSize.Y)
-				),
-			},
-			Enum.EasingStyle.Linear,
-			0.05
-		)
+		library:tween(items["hue_picker"], {
+			Position = dim2(0, (items["hue_gradient"].AbsoluteSize.X - items["hue_picker"].AbsoluteSize.X) * h, 0.5, 0),
+		}, Enum.EasingStyle.Linear, 0.05)
+		library:tween(items["alpha_picker"], {
+			Position = dim2(
+				0,
+				(items["alpha_gradient"].AbsoluteSize.X - items["alpha_picker"].AbsoluteSize.X) * (1 - a),
+				0.5,
+				0
+			),
+		}, Enum.EasingStyle.Linear, 0.05)
+		library:tween(items["satvalpicker"], {
+			Position = dim2(
+				0,
+				s * (items["saturation_holder"].AbsoluteSize.X - items["satvalpicker"].AbsoluteSize.X),
+				1,
+				1 - v * (items["saturation_holder"].AbsoluteSize.Y - items["satvalpicker"].AbsoluteSize.Y)
+			),
+		}, Enum.EasingStyle.Linear, 0.05)
 
 		items["alpha_indicator"]:FindFirstChildOfClass("UIGradient").Color =
 			rgbseq({ rgbkey(0, rgb(112, 112, 112)), rgbkey(1, hsv(h, 1, 1)) }) -- shit code
@@ -3590,6 +3562,7 @@ function library:list(properties)
 		options = properties.options or { "1", "2", "3" },
 		flag = properties.flag or library:next_flag(),
 		callback = properties.callback or function() end,
+		multi = Data.Multi or Data.multi or false,
 		data_store = {},
 		current_element,
 	}
