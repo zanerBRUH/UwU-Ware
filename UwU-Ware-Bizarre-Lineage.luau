@@ -8995,7 +8995,7 @@ Players.LocalPlayer.OnTeleport:Connect(function(State)
 	if TeleportCheck == false then
 		TeleportCheck = true
 		queueteleport(
-			"https://raw.githubusercontent.com/zanerBRUH/UwU-Ware/refs/heads/main/UwU-Ware-Bizarre-Lineage.luau'))()"
+			"loadstring(game:HttpGet('https://raw.githubusercontent.com/zanerBRUH/UwU-Ware/refs/heads/main/UwU-Ware-Bizarre-Lineage.luau'))()"
 		)
 	end
 end)
