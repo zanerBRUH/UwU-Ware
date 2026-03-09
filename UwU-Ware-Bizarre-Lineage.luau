@@ -8254,7 +8254,7 @@ do
 				Name = "Load",
 				Callback = function()
 					if ConfigSelected then
-						Library:LoadConfig(readfile(Library.Folders.Configs .. "/" .. ConfigSelected))
+						Library:LoadConfig(readfile(ConfigSelected))
 					end
 				end,
 			})
