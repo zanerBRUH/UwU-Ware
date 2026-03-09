@@ -8307,7 +8307,7 @@ function autoFarmEnemy(enemy)
 
 		if getgenv().autoFarmOverride == true then
 			getgenv().autoFarmOverride = false
-			break
+			return
 		end
 
 		if
@@ -8315,7 +8315,7 @@ function autoFarmEnemy(enemy)
 			or getgenv().AutoPvEBoard ~= AutoPvEBoard
 			or getgenv().AutoQuest ~= AutoQuest
 		then
-			break
+			return
 		end
 
 		if Character:FindFirstChild("Highlight") and Character.Highlight.FillTransparency <= 0 then
@@ -8333,6 +8333,8 @@ function autoFarmEnemy(enemy)
 		end
 		Character.client_character_controller.M1:FireServer(unpack({ true, false }))
 	end
+
+	return
 end
 
 function openChests()
