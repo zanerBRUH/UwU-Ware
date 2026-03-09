@@ -61,13 +61,168 @@ getgenv().Options = {}
 --//Services
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Http = game:GetService("HttpService")
+local HttpService = game:GetService("HttpService")
 
 --//Variables
 local plr = Players.LocalPlayer
-local character
-local humanoid
-local hrp
+if plr:GetAttribute("Loaded") == false or plr:GetAttribute("Loaded") == nil then
+	plr.PlayerGui:WaitForChild("Logo_Loader", 5)
+	repeat
+		task.wait()
+		if plr.PlayerGui:FindFirstChild("Logo_Loader") then
+			continue
+		end
+
+		ReplicatedStorage.requests.character.spawn:FireServer()
+		if plr.PlayerGui:FindFirstChild("Main Menu") then
+			plr.PlayerGui["Main Menu"]:Destroy()
+		end
+	until plr:GetAttribute("Loaded") == true
+end
+
+local PlayerData = plr.PlayerData
+local SlotData = PlayerData.SlotData
+
+local character = plr.Character or plr.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local hrp = character:WaitForChild("HumanoidRootPart")
+
+function Teleport(ChosenCFrame)
+	if typeof(ChosenCFrame) == "Instance" and ChosenCFrame:IsA("Model") then
+		if ChosenCFrame.PrimaryPart then
+			ChosenCFrame = ChosenCFrame.PrimaryPart.CFrame
+		else
+			ChosenCFrame = ChosenCFrame:FindFirstChildOfClass("BasePart").CFrame
+		end
+	elseif typeof(ChosenCFrame) == "Instance" and ChosenCFrame:IsA("BasePart") then
+		ChosenCFrame = ChosenCFrame.CFrame
+	end
+	hrp.CFrame = ChosenCFrame
+end
+
+function GetAttribute(obj, name)
+	return obj:GetAttribute(name)
+end
+
+function farming()
+	if Library.Flags.autoTrackedQuest == true then
+		return true
+	elseif Library.Flags.autoPvEBoard == true then
+		return true
+	elseif Library.Flags.autoGangContracts == true then
+		return true
+	elseif Library.Flags.autoWorldEvent == true then
+		return true
+	elseif Library.Flags.autoSelectedEnemy == true then
+		return true
+	end
+
+	return false
+end
+
+function getEnemyLocation(name)
+	print(name)
+	local locationsList = {
+		["Cultist"] = CFrame.new(2429, 922, 874),
+		["Cultist Leaders"] = CFrame.new(2444, 910, 1457),
+		["Elite Mafia Member"] = CFrame.new(-1457, 910, 543),
+		["Elite Vampire"] = CFrame.new(2227, 909, 1437),
+		["Hamon Apprentice"] = CFrame.new(1324, 909, 1253),
+		["Hamon Master"] = CFrame.new(1324, 909, 1253),
+		["Mafia Member"] = CFrame.new(-1457, 910, 543),
+		["Night Vampire"] = CFrame.new(1287, 875, -527),
+		["Spin User"] = CFrame.new(1641, 940, 1470),
+		["The Self"] = CFrame.new(1076, 14080, -98),
+		["Vampire"] = CFrame.new(2227, 909, 1437),
+		-- ["Vampire Cyborg"] = CFrame.new(),
+		["Zombie"] = CFrame.new(2429, 922, 874),
+		["Zombie Cyborg"] = CFrame.new(1757, 940, 1889),
+		["Zombie Grunt"] = CFrame.new(1757, 940, 1889),
+	}
+	if locationsList[name] then
+		return locationsList[name]
+	end
+	return
+end
+
+function autoFarmEnemy(enemy)
+	character = plr.Character or plr.CharacterAdded:Wait()
+	hrp = character:WaitForChild("HumanoidRootPart")
+
+	while enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 and character.Humanoid.Health > 0 do
+		task.wait()
+
+		if getgenv().autoFarmOverride == true then
+			getgenv().autoFarmOverride = false
+			return
+		end
+		if farming() == false then
+			return
+		end
+
+		if character:FindFirstChild("Highlight") and character.Highlight.FillTransparency <= 0 then
+			local dodgeTick = tick()
+			task.wait(0.1)
+			repeat
+				Teleport(enemy.HumanoidRootPart.CFrame * CFrame.new(0, 40, 0))
+				task.wait()
+			until tick() - dodgeTick > 2
+		end
+
+		Teleport(enemy.HumanoidRootPart.CFrame * CFrame.new(0, -8, 0))
+		hrp.CFrame = CFrame.lookAt(hrp.Position, enemy.HumanoidRootPart.Position)
+	end
+
+	return
+end
+
+function openChests()
+	local data = HttpService:JSONDecode(slotData.Inventory.Value)
+	for _, item in data do
+		if string.find(item.Name, " Chest") then
+			for i = 1, item.Amount do
+				ReplicatedStorage.requests.character.use_item:FireServer(unpack({ item.Name, { UseAll = true } }))
+			end
+		end
+	end
+end
+
+function autoSell()
+	local selling = {}
+	local sellNames = {
+		"White Jacket",
+		"Grey Jacket",
+		"Balaclava",
+		"Arm Wraps",
+		"Shades",
+		"Black Jacket",
+		"Plain White Scarf",
+		"Hood",
+		"Simple Cape",
+		"Mask",
+		"Head Goggles",
+		"Biker Chain",
+		"Red Topcoat",
+		"Green Ripped Jacket",
+		"White Ripped Jacket",
+		"Face Goggles",
+		"Eye Patch",
+		"Grey Topcoat",
+		"White Topcoat",
+		"Baseball Cap",
+		"Gold Crown",
+	}
+	local data = HttpService:JSONDecode(slotData.Inventory.Value)
+	for _, item in data do
+		if table.find(sellNames, item.Name) then
+			item.duplicates = 1
+			print(item.ID, item.Name, item.Pips, item.duplicates)
+			table.insert(selling, item)
+		end
+	end
+
+	ReplicatedStorage.requests.general.SellItem:FireServer(unpack({ selling }))
+end
 
 do
 	local Window = Library:Window({
@@ -141,13 +296,266 @@ do
 					Subpages["Farms"]:Section({ Name = "Farm Settings", Icon = "103174889897193", Side = 2 })
 				do
 					local trackedQuest = ""
-					trackedQuest = plr.PlayerData.SlotData.TrackedQuest.Value
-					FarmsSection:Label("Tracked Quest: " .. trackedQuest, "Left")
+					local questLabel = FarmsSection:Label("Tracked Quest: " .. trackedQuest, "Left")
+
+					plr.PlayerData.SlotData.TrackedQuest.Changed:Connect(function() end)
+
 					FarmsSection:Toggle({
 						Name = "Auto Tracked Quest",
 						Flag = "autoTrackedQuest",
 						Default = false,
 						Callback = function(Value)
+							local slotData = plr.PlayerData.SlotData
+							trackedQuest = slotData.TrackedQuest.Value
+							questLabel:Set("Tracked Quest: " .. trackedQuest)
+
+							while Library.Flags.autoTrackedQuest do
+								task.wait()
+
+								if trackedQuest ~= slotData.TrackedQuest.Value then
+									trackedQuest = slotData.TrackedQuest.Value
+									questLabel:Set("Tracked Quest: " .. trackedQuest)
+								end
+
+								local questData = HttpService:JSONDecode(slotData.CurrentQuests.Value)
+								if not trackedQuest or trackedQuest == "" or not questData then
+									return
+								end
+								for index, quest in questData do
+									if quest.Name == trackedQuest then
+										trackedQuest = questData[index]
+										break
+									end
+								end
+
+								if workspace.Effects:FindFirstChild("questbrick") then
+									Teleport(workspace.Effects.questbrick.questbrick.CFrame * CFrame.new(0, 0, 5))
+								end
+
+								if trackedQuest.Talk then
+									for character, completed in trackedQuest.Talk do
+										if completed == false then
+											if workspace.Npcs:FindFirstChild(character) then
+												Teleport(
+													workspace.Npcs[character].HumanoidRootPart.CFrame
+														* CFrame.new(0, 0, -3)
+												)
+											elseif ReplicatedStorage.assets.npc_cache:FindFirstChild(character) then
+												Teleport(
+													ReplicatedStorage.assets.npc_cache[character].HumanoidRootPart.CFrame
+														* CFrame.new(0, 0, -3)
+												)
+											end
+											ReplicatedStorage.requests.character.dialogue:FireServer(unpack({
+												workspace.Npcs:WaitForChild(character, 10),
+												1,
+											}))
+											task.wait(1)
+										end
+									end
+								end
+
+								if trackedQuest.Kills then
+									for enemy, amount in trackedQuest.Kills do
+										local complete = false
+										for _, obj in
+											plr.PlayerGui.menu.task_holder.holder.newobjective.ScrollingFrame.holder:GetChildren()
+										do
+											if
+												(
+													obj:FindFirstChild("TextLabel")
+													and string.find(obj.TextLabel.Text, "Defeat " .. enemy)
+												)
+												or (
+													obj:FindFirstChild("text")
+													and string.find(obj.text.TextLabel.Text, "Defeat " .. enemy)
+												)
+											then
+												if
+													(obj:FindFirstChild("Frame") and obj.Frame.finished.Visible == true)
+													or (
+														obj:FindFirstChild("text")
+														and obj.text.Frame.finished.Visible == true
+													)
+												then
+													complete = true
+												end
+											end
+										end
+										if complete == true then
+											continue
+										end
+										if getEnemyLocation(enemy) and enemy ~= "The Self" then
+											Teleport(getEnemyLocation(enemy))
+										end
+										if enemy == "The Self" then
+											for _, liveEnemy in workspace.Live:GetChildren() do
+												if liveEnemy:GetAttribute("Display Name") == enemy then
+													autoFarmEnemy(liveEnemy)
+													break
+												end
+											end
+
+											if workspace.Npcs:WaitForChild(enemy, 5) then
+												ReplicatedStorage.requests.character.dialogue:FireServer(unpack({
+													workspace.Npcs:WaitForChild(enemy, 10),
+													1,
+												}))
+												ReplicatedStorage.requests.character.dialogue:FireServer(unpack({
+													workspace.Npcs:WaitForChild(enemy, 10),
+													"Yes.",
+												}))
+											else
+												if workspace.Npcs:FindFirstChild("Meditation") then
+													Teleport(
+														workspace.Npcs["Meditation"].HumanoidRootPart.CFrame
+															* CFrame.new(0, 0, -3)
+													)
+												elseif
+													ReplicatedStorage.assets.npc_cache:FindFirstChild("Meditation")
+												then
+													Teleport(
+														ReplicatedStorage.assets.npc_cache["Meditation"].HumanoidRootPart.CFrame
+															* CFrame.new(0, 0, -3)
+													)
+													task.wait(5)
+												end
+												ReplicatedStorage.requests.character.dialogue:FireServer(unpack({
+													workspace.Npcs:WaitForChild("Meditation", 10),
+													1,
+												}))
+												ReplicatedStorage.requests.character.dialogue:FireServer(unpack({
+													workspace.Npcs:WaitForChild("Meditation", 10),
+													"Meditate.",
+												}))
+											end
+										else
+											for _, liveEnemy in workspace.Live:GetChildren() do
+												if string.find(liveEnemy.Name, enemy) then
+													autoFarmEnemy(liveEnemy)
+													break
+												end
+											end
+										end
+									end
+								end
+
+								if trackedQuest.TurnInItems then
+									local inventoryData = HttpService:JSONDecode(slotData.Inventory.Value)
+									for neededItems, amount in trackedQuest.TurnInItems do
+										for _, item in inventoryData do
+											if item.Name == neededItems and item.Amount >= amount then
+												for _, obj in
+													plr.PlayerGui.menu.task_holder.holder.newobjective.ScrollingFrame.holder:GetChildren()
+												do
+													if
+														(
+															obj:FindFirstChild("TextLabel")
+															and string.find(
+																obj.TextLabel.Text,
+																"Turn In " .. neededItems
+															)
+														)
+														or (
+															obj:FindFirstChild("text")
+															and string.find(
+																obj.text.TextLabel.Text,
+																"Turn In " .. neededItems
+															)
+														)
+													then
+														local npc
+														if obj:FindFirstChild("TextLabel") then
+															npc = string.split(obj.TextLabel.Text, "to ")[2]
+														else
+															npc = string.split(obj.text.TextLabel.Text, "to ")[2]
+														end
+														npc = string.split(npc, "「")[1]
+														if workspace.Npcs:FindFirstChild(npc) then
+															Teleport(
+																workspace.Npcs[npc].HumanoidRootPart.CFrame
+																	* CFrame.new(0, 0, -3)
+															)
+														elseif
+															ReplicatedStorage.assets.npc_cache:FindFirstChild(npc)
+														then
+															Teleport(
+																ReplicatedStorage.assets.npc_cache[npc].HumanoidRootPart.CFrame
+																	* CFrame.new(0, 0, -3)
+															)
+														end
+														ReplicatedStorage.requests.character.dialogue:FireServer(
+															unpack({
+																workspace.Npcs:WaitForChild(npc, 10),
+																1,
+															})
+														)
+														ReplicatedStorage.requests.character.dialogue:FireServer(
+															unpack({
+																workspace.Npcs:WaitForChild(npc, 10),
+																"Here.",
+															})
+														)
+													end
+												end
+											end
+										end
+									end
+								end
+
+								if trackedQuest.GangContracts then
+									if workspace.Npcs:FindFirstChild("Gang Contractor") then
+										Teleport(
+											workspace.Npcs["Gang Contractor"].HumanoidRootPart.CFrame
+												* CFrame.new(0, 0, -3)
+										)
+									elseif ReplicatedStorage.assets.npc_cache:FindFirstChild("Gang Contractor") then
+										Teleport(
+											ReplicatedStorage.assets.npc_cache["Gang Contractor"].HumanoidRootPart.CFrame
+												* CFrame.new(0, 0, -3)
+										)
+									end
+									ReplicatedStorage.requests.character.dialogue:FireServer(unpack({
+										workspace.Npcs:WaitForChild("Gang Contractor", 10),
+										1,
+									}))
+									task.wait(0.1)
+									ReplicatedStorage.requests.character.dialogue:FireServer(unpack({
+										workspace.Npcs:WaitForChild("Gang Contractor", 10),
+										"Yes.",
+									}))
+									task.wait(1)
+									for _, questbrick in workspace.Effects:GetChildren() do
+										if
+											questbrick:FindFirstChild("Quest Marker")
+											and (
+												string.find(
+													questbrick["Quest Marker"].Image.Title.Text,
+													"Rescue Gang Member"
+												)
+												or string.find(
+													questbrick["Quest Marker"].Image.Title.Text,
+													"Capture Territory"
+												)
+											)
+										then
+											Teleport(questbrick.questbrick.CFrame * CFrame.new(0, 0, -3))
+											if workspace:FindFirstChild("Capture Gang Member") then
+												task.wait(1)
+												fireproximityprompt(
+													workspace["Capture Gang Member"].HumanoidRootPart.ProximityPrompt,
+													5
+												)
+												task.wait(12)
+											else
+												character.Humanoid.Health = 0
+												task.wait(5)
+											end
+											break
+										end
+									end
+								end
+							end
 							print(Value)
 						end,
 					})
@@ -220,11 +628,39 @@ do
 						end,
 					})
 					FarmSettingsSection:Toggle({
+						Name = "Auto Summon Stand",
+						Flag = "autoSummonStand",
+						Default = false,
+						Callback = function(Value)
+							if
+								(
+									GetAttribute(character, "SummonedStand") == nil
+									or GetAttribute(character, "SummonedStand") == ""
+								) and farming() == true
+							then
+								character.client_character_controller.SummonStand:FireServer()
+							end
+
+							character:GetAttributeChangedSignal("SummonedStand"):Connect(function()
+								if
+									(
+										GetAttribute(character, "SummonedStand") == nil
+										or GetAttribute(character, "SummonedStand") == ""
+									) and farming() == true
+								then
+									character.client_character_controller.SummonStand:FireServer()
+								end
+							end)
+						end,
+					})
+					FarmSettingsSection:Toggle({
 						Name = "Auto M1",
 						Flag = "autoM1",
 						Default = false,
 						Callback = function(Value)
-							print(Value)
+							while Library.Flags.autoM1 and farming() do
+								character.client_character_controller.M1:FireServer(unpack({ true, false }))
+							end
 						end,
 					})
 					FarmSettingsSection:Toggle({
@@ -238,7 +674,7 @@ do
 					FarmSettingsSection:Dropdown({
 						Name = "Use Skills: ",
 						Flag = "attackDropdown",
-						Items = { "E", "R", "Z", "X", "C", "V" },
+						Items = { "E", "R", "Z", "X", "C", "V", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" },
 						Default = "",
 						MaxSize = 155,
 						Multi = true,
