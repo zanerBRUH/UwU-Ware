@@ -8249,8 +8249,6 @@ do
 				end,
 			})
 
-			
-
 			ConfigsSection:Button({
 				Name = "Load",
 				Callback = function()
