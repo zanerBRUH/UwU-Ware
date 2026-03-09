@@ -10486,9 +10486,9 @@ do
 				})
 			end
 
-			-- function Label:Set(Text)
-			-- 	Items["Text"].Instance.Text = Text
-			-- end
+			function Label:Set(Text)
+				Items["Text"].Instance.Text = Text
+			end
 
 			function Label:SetVisibility(Bool)
 				Items["Label"].Instance.Visible = Bool
