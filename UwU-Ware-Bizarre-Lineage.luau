@@ -2907,6 +2907,7 @@ do
 
 				Items["CloseButton"]:Connect("MouseButton1Down", function()
 					Library:Unload()
+					getgenv().UWU_LOADED = false
 				end)
 
 				Items["CloseIconAccent"] = Instances:Create("Frame", {
