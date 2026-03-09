@@ -128,6 +128,7 @@ do
 			Directory = "lyapossss",
 			Configs = "lyapossss/Configs",
 			Assets = "lyapossss/Assets",
+			AutoLoad = "lyapossss/AutoLoad.txt",
 		},
 
 		-- Ignore below
@@ -946,9 +947,27 @@ do
 		return Success, Result
 	end
 
-	Library.SetAutoLoadConfig = function(self, Config) end
+	Library.SetAutoLoadConfig = function(self, Config)
+		if Config and Config ~= "" then
+			writefile(Library.Folders.AutoLoad, Config)
+		else
+			if isfile(Library.Folders.AutoLoad) then
+				delfile(Library.Folders.AutoLoad)
+			end
+		end
+	end
 
-	Library.AutoLoadConfig = function(self, Config) end
+	Library.AutoLoadConfig = function(self)
+		if isfile(Library.Folders.AutoLoad) then
+			local ConfigName = readfile(Library.Folders.AutoLoad)
+			if ConfigName and ConfigName ~= "" and isfile(Library.Folders.Configs .. "/" .. ConfigName) then
+				local ConfigData = readfile(Library.Folders.Configs .. "/" .. ConfigName)
+				Library:LoadConfig(ConfigData)
+				return true
+			end
+		end
+		return false
+	end
 
 	Library.DeleteConfig = function(self, Config)
 		if isfile(Library.Folders.Configs .. "/" .. Config) then
@@ -8230,6 +8249,8 @@ do
 				end,
 			})
 
+			
+
 			ConfigsSection:Button({
 				Name = "Load",
 				Callback = function()
@@ -8245,6 +8266,22 @@ do
 					if ConfigSelected then
 						writefile(Library.Folders.Configs .. "/" .. ConfigSelected, Library:GetConfig())
 					end
+				end,
+			})
+
+			ConfigsSection:Button({
+				Name = "Set Auto Load",
+				Callback = function()
+					if ConfigSelected then
+						Library:SetAutoLoadConfig(ConfigSelected)
+					end
+				end,
+			})
+
+			ConfigsSection:Button({
+				Name = "Clear Auto Load",
+				Callback = function()
+					Library:SetAutoLoadConfig("")
 				end,
 			})
 
@@ -8988,6 +9025,8 @@ Library:Notification({
 
 Window:Init()
 getgenv().Library = Library
+
+Library:AutoLoadConfig()
 
 Character = plr.Character or plr.CharacterAdded:Wait()
 HRP = Character:WaitForChild("HumanoidRootPart")
