@@ -8260,13 +8260,10 @@ do
 	end
 end
 
-print("Pass functions")
 function Teleport(ChosenCFrame)
 	if typeof(ChosenCFrame) == "Instance" and ChosenCFrame:IsA("Model") then
-		print("Model")
 		ChosenCFrame = ChosenCFrame.PrimaryPart.CFrame
 	elseif typeof(ChosenCFrame) == "Instance" and ChosenCFrame:IsA("BasePart") then
-		print("Basepart")
 		ChosenCFrame = ChosenCFrame.CFrame
 	end
 	HRP.CFrame = ChosenCFrame
@@ -8305,12 +8302,7 @@ function autoFarmEnemy(enemy)
 	Character = plr.Character or plr.CharacterAdded:Wait()
 	HRP = Character:WaitForChild("HumanoidRootPart")
 
-	while
-		enemy:FindFirstChild("Humanoid")
-		and enemy.Humanoid.Health > 0
-		and Character.Humanoid.Health > 0
-		and getgenv().autoFarmOverride == false
-	do
+	while enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 and Character.Humanoid.Health > 0 do
 		task.wait()
 
 		if getgenv().autoFarmOverride == true then
@@ -8510,6 +8502,7 @@ do
 
 						if plr.PlayerGui:FindFirstChild("raidcomplete") then
 							RS.requests.character.retryraid:FireServer()
+							break
 						end
 					end
 				end)
