@@ -1,9 +1,10 @@
+print("library")
 local Library = loadstring(
-	game:HttpGet("https://raw.githubusercontent.com/sametexe001/sametlibs/refs/heads/main/Kiwisense/Library.lua")
+	game:HttpGet("https://raw.githubusercontent.com/zanerBRUH/UwU-Ware/refs/heads/main/Libraries/Kiwisense.lua")
 )()
-
+print("after libraryo")
 --
--- Example
+-- Examplek
 local LoadingTick = os.clock()
 local rgb = Color3.fromRGB
 local Options, MiscOptions
@@ -224,6 +225,7 @@ function autoSell()
 	ReplicatedStorage.requests.general.SellItem:FireServer(unpack({ selling }))
 end
 
+print("Before Window")
 do
 	local Window = Library:Window({
 		Name = "UwU-Ware",
