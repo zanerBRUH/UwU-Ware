@@ -78,7 +78,7 @@ local HttpService = game:GetService("HttpService")
 local plr = Players.LocalPlayer
 if plr:GetAttribute("Loaded") == false or plr:GetAttribute("Loaded") == nil then
 	if game.PlaceId == 74747090658891 then
-		task.wait(5)
+		task.wait(15)
 	end
 
 	repeat

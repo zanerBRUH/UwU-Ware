@@ -2508,7 +2508,7 @@ do
 			writefile(Config, Library:GetConfig())
 			Library:Notification({
 				Name = "Success",
-				Description = "Succesfully saved config: " .. Config .. ".json",
+				Description = "Succesfully saved config: " .. Config,
 				Duration = 5,
 				Icon = "116339777575852",
 				IconColor = FromRGB(52, 255, 164),
