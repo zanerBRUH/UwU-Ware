@@ -2491,6 +2491,8 @@ do
 	end
 
 	Library.DeleteConfig = function(self, Config)
+		print(Library.Folders.Configs .. "/" .. Config)
+		print(isfile(Library.Folders.Configs .. "/" .. Config))
 		if isfile(Library.Folders.Configs .. "/" .. Config) then
 			delfile(Library.Folders.Configs .. "/" .. Config)
 			Library:Notification({

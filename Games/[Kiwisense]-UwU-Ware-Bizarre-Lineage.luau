@@ -100,6 +100,10 @@ local humanoid = character:WaitForChild("Humanoid")
 local hrp = character:WaitForChild("HumanoidRootPart")
 
 local connections = {}
+local StandsList = {}
+local selectedStands = {}
+local standData = HttpService:JSONDecode(slotData.Stand.Value)
+local skin = standData.Skin or "Default"
 
 function Teleport(ChosenCFrame)
 	if typeof(ChosenCFrame) == "Instance" and ChosenCFrame:IsA("Model") then
@@ -605,6 +609,46 @@ do
 						end,
 					})
 					FarmsSection:Toggle({
+						Name = "Auto Raid",
+						Flag = "autoRaid",
+						Default = false,
+						Callback = function()
+							if Library.Flags.autoRaid then
+								connections["autoRaid"] = task.spawn(function()
+									print("Raid func")
+									if game.PlaceId ~= 74747090658891 then
+										return
+									end
+									while Library.Flags.autoRaid do
+										task.wait()
+
+										for _, liveEnemy in workspace.Live:GetChildren() do
+											if
+												liveEnemy.Name ~= "Server"
+												and not string.find(liveEnemy.Name, "Hostage")
+												and not Players:FindFirstChild(liveEnemy.Name)
+											then
+												autoFarmEnemy(liveEnemy)
+											end
+
+											if not Library.Flags.autoRaid then
+												break
+											end
+										end
+
+										if plr.PlayerGui:FindFirstChild("raidcomplete") then
+											RS.requests.character.retryraid:FireServer()
+											break
+										end
+									end
+								end)
+							else
+								connections["AutoRaid"] = nil
+								return
+							end
+						end,
+					})
+					FarmsSection:Toggle({
 						Name = "Auto PvE Board",
 						Flag = "autoPvEBoard",
 						Default = false,
@@ -744,13 +788,52 @@ do
 				local ItemSettingsSection =
 					Subpages["Items"]:Section({ Name = "Item Settings", Icon = "103174889897193", Side = 2 })
 				do
+					local standLabel = ItemsSection:Label("Stand: " .. standData.Name .. " - " .. skin, "Left")
+					slotData.Stand.Changed:Connect(function()
+						standData = HttpService:JSONDecode(slotData.Stand.Value)
+						skin = standData.Skin or "Default"
+						standLabel:Set("Stand: " .. standData.Name .. " - " .. skin)
+					end)
 					ItemsSection:Toggle({
 						Name = "Auto Stand Arrow",
 						Flag = "autoStandArrow",
 						Default = false,
-						Callback = function(Value)
-							print(Value)
+						Callback = function()
+							if
+								Library.Flags.autoStandArrow
+								and not table.find(selectedStands, standData.Name)
+								and not (Library.Flags.keepSkins and standData.Skin ~= nil)
+							then
+								connections["AutoArrow"] = task.spawn(function()
+									repeat
+										local inventoryData = HttpService:JSONDecode(slotData.Inventory.Value)
+										for _, item in inventoryData do
+											if item.Name == "Stand Arrow" and item.Amount <= 1 then
+												ItemsSection.Items[1]:Set(false)
+											end
+										end
+										ReplicatedStorage.requests.character.use_item:FireServer(
+											unpack({ "Stand Arrow" })
+										)
+										task.wait(8)
+									until table.find(selectedStands, standData.Name)
+										or (Library.Flags.keepSkins and standData.Skin ~= nil)
+										or not Library.Flags.autoStandArrow
+
+									getgenv().Options.autoStandArrow:Set(false)
+								end)
+							elseif not Library.Flags.autoStandArrow then
+								connections["AutoArrow"] = nil
+								return
+							else
+								getgenv().Options.autoStandArrow:Set(false)
+							end
 						end,
+					})
+					ItemsSection:Toggle({
+						Name = "Keep Skins?",
+						Flag = "keepSkins",
+						Default = false,
 					})
 					ItemsSection:Toggle({
 						Name = "Auto Sell",
@@ -800,8 +883,6 @@ do
 					})
 				end
 				do
-					local StandsList = {}
-					local selectedStands = {}
 					for _, stand in ReplicatedStorage.assets.models.stands:GetChildren() do
 						if stand.Name ~= "Skins" then
 							table.insert(StandsList, stand.Name)
@@ -811,18 +892,8 @@ do
 						Name = "Stands List: ",
 						Flag = "standsDropdown",
 						Items = StandsList,
-						Default = {
-							"Star Platinum",
-							"The World, High Voltage",
-							"The World Over Heaven",
-							"Made In Heaven",
-							"The World",
-							"C-Moon",
-							"Whitesnake",
-							"Star Platinum, The World",
-							"King Crimson",
-						},
-						MaxSize = 155,
+						Default = "",
+						MaxSize = 300,
 						Multi = true,
 						Callback = function(selected)
 							selectedStands = selected
@@ -1264,7 +1335,8 @@ do
 end
 
 local TeleportCheck = false
-Players.LocalPlayer.OnTeleport:Connect(function()
+
+plr.OnTeleport:Connect(function()
 	if TeleportCheck == false then
 		TeleportCheck = true
 		queueteleport(
