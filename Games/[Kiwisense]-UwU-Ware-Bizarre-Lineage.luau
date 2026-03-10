@@ -96,7 +96,7 @@ if plr:GetAttribute("Loaded") == false or plr:GetAttribute("Loaded") == nil then
 			plr:GetAttribute("Loaded") == true
 			and not plr.PlayerGui:FindFirstChild("Logo_Loader")
 			and not plr.PlayerGui:FindFirstChild("Main Menu")
-		) or tick() - loadTick >= 20
+		) or loadTick - tick() >= 20
 end
 
 local playerData = plr.PlayerData
@@ -210,12 +210,12 @@ function getEnemyLocation(name)
 end
 
 function autoFarmEnemy(enemy)
-	character = plr.Character or plr.CharacterAdded:Wait()
-	humanoid = character:WaitForChild("Humanoid")
-	hrp = character:WaitForChild("HumanoidRootPart")
-
 	while enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 and humanoid.Health > 0 do
 		task.wait()
+
+		character = plr.Character or plr.CharacterAdded:Wait()
+		humanoid = character:WaitForChild("Humanoid")
+		hrp = character:WaitForChild("HumanoidRootPart")
 
 		if getgenv().autoFarmOverride == true then
 			getgenv().autoFarmOverride = false
