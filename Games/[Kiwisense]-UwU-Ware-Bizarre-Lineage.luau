@@ -80,7 +80,7 @@ if plr:GetAttribute("Loaded") == false or plr:GetAttribute("Loaded") == nil then
 	repeat
 		task.wait()
 
-		ReplicatedStorage.requests.character.spawn:FireServer()
+		ReplicatedStorage:WaitForChild("requests"):WaitForChild("character"):WaitForChild("spawn"):FireServer()
 		if plr.PlayerGui:FindFirstChild("Logo_Loader") then
 			plr.Playergui.Logo_Loader:Destroy()
 		end
