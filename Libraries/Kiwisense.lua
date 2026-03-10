@@ -8330,24 +8330,14 @@ do
 			local OldSize = Items["MainFrame"].Instance.AbsoluteSize
 
 			Items["MinimizeButton"]:Connect("MouseButton1Down", function()
-				IsMinimized = not IsMinimized
-
-				if IsMinimized then
-					OldSize = Items["MainFrame"].Instance.AbsoluteSize
-					Items["MainFrame"]:Tween(
-						nil,
-						{ Size = UDim2New(0, Items["MainFrame"].Instance.Size.X.Offset, 0, 35) }
-					)
-					Items["MinimizeButton"]:Tween(nil, { ImageTransparency = 1 })
-					Items["UnMinimizeButton"]:Tween(nil, { ImageTransparency = 0 })
-				else
-					Items["MainFrame"]:Tween(
-						nil,
-						{ Size = UDim2New(0, Items["MainFrame"].Instance.Size.X.Offset, 0, OldSize.Y) }
-					)
-					Items["MinimizeButton"]:Tween(nil, { ImageTransparency = 0 })
-					Items["UnMinimizeButton"]:Tween(nil, { ImageTransparency = 1 })
-				end
+				Window:SetOpen(not Window.IsOpen)
+				Library:Notification({
+					Name = "Success",
+					Description = "Press " .. Library.MenuKeybind .. "to open back the menu!",
+					Duration = 3,
+					Icon = "116339777575852",
+					IconColor = Color3.fromRGB(52, 255, 164),
+				})
 			end)
 
 			Items["CloseButton"]:Connect("MouseButton1Down", function()
