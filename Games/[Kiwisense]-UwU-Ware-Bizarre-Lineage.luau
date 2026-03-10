@@ -1,9 +1,7 @@
-print("library")
 local LoadingTick = os.clock()
 local Library = loadstring(
 	game:HttpGet("https://raw.githubusercontent.com/zanerBRUH/UwU-Ware/refs/heads/main/Libraries/Kiwisense.lua")
 )()
-print("after libraryo")
 --
 --
 local rgb = Color3.fromRGB
@@ -178,9 +176,10 @@ end
 
 function autoFarmEnemy(enemy)
 	character = plr.Character or plr.CharacterAdded:Wait()
+	humanoid = character:WaitForChild("Humanoid")
 	hrp = character:WaitForChild("HumanoidRootPart")
 
-	while enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 and character.Humanoid.Health > 0 do
+	while enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 and humanoid.Health > 0 do
 		task.wait()
 
 		if getgenv().autoFarmOverride == true then
@@ -692,6 +691,7 @@ do
 						Default = false,
 						Callback = function(Value)
 							while Library.Flags.autoM1 and farming() do
+								wait()
 								character.client_character_controller.M1:FireServer(unpack({ true, false }))
 							end
 						end,

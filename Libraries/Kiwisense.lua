@@ -124,7 +124,15 @@
 if getgenv().Library then
 	getgenv().Library:Unload()
 end
-local queueteleport =
+
+function missing(t, f, fallback)
+	if type(f) == t then
+		return f
+	end
+	return fallback
+end
+
+queueteleport =
 	missing("function", queue_on_teleport or (syn and syn.queue_on_teleport) or (fluxus and fluxus.queue_on_teleport))
 
 local ESPFonts = {}
