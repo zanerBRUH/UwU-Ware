@@ -234,13 +234,14 @@ function autoFarmEnemy(enemy)
 			character.client_character_controller.SummonStand:FireServer()
 		end
 
-		if direction == "top" then
+		print(direction, distance)
+		if direction == "Above" then
 			Teleport(enemy.HumanoidRootPart.CFrame * CFrame.new(0, distance, 0))
-		elseif direction == "bottom" then
+		elseif direction == "Below" then
 			Teleport(enemy.HumanoidRootPart.CFrame * CFrame.new(0, -distance, 0))
-		elseif direction == "front" then
+		elseif direction == "Front" then
 			Teleport(enemy.HumanoidRootPart.CFrame * CFrame.new(0, 0, distance))
-		elseif direction == "back" then
+		elseif direction == "Back" then
 			Teleport(enemy.HumanoidRootPart.CFrame * CFrame.new(0, 0, -distance))
 		end
 
@@ -767,7 +768,7 @@ do
 					FarmSettingsSection:Dropdown({
 						Name = "Attack From",
 						Flag = "AttackDropdown",
-						Items = { "Above", "Below", "Left", "Right" },
+						Items = { "Above", "Below", "Front", "Back" },
 						Default = direction,
 						MaxSize = 155,
 						Multi = false,
