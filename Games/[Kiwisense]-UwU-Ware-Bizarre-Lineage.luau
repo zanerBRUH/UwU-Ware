@@ -1294,18 +1294,6 @@ do
 
 				do
 					AutoloadSection:Button({
-						Name = "set selected config as autoload",
-						Callback = function()
-							if ConfigSelected then
-								writefile(
-									Library.Folders.Directory .. "/AutoLoadConfig (do not modify this).json",
-									readfile(Library.Folders.Configs .. "/" .. ConfigSelected)
-								)
-							end
-						end,
-					})
-
-					AutoloadSection:Button({
 						Name = "set current config as autoload",
 						Callback = function()
 							if ConfigSelected then
