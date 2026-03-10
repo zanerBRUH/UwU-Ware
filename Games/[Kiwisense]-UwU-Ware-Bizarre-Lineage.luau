@@ -103,6 +103,9 @@ local connections = {}
 local StandsList = {}
 local selectedStands = {}
 local selectedGrabItems = {}
+local selectedSkills = {}
+local distance = 8
+local direction = "Bottom"
 local standData = HttpService:JSONDecode(slotData.Stand.Value)
 local skin = standData.Skin or "Default"
 
@@ -231,11 +234,26 @@ function autoFarmEnemy(enemy)
 			character.client_character_controller.SummonStand:FireServer()
 		end
 
-		Teleport(enemy.HumanoidRootPart.CFrame * CFrame.new(0, -8, 0))
+		if direction == "top" then
+			Teleport(enemy.HumanoidRootPart.CFrame * CFrame.new(0, distance, 0))
+		elseif direction == "bottom" then
+			Teleport(enemy.HumanoidRootPart.CFrame * CFrame.new(0, -distance, 0))
+		elseif direction == "front" then
+			Teleport(enemy.HumanoidRootPart.CFrame * CFrame.new(0, 0, distance))
+		elseif direction == "back" then
+			Teleport(enemy.HumanoidRootPart.CFrame * CFrame.new(0, 0, -distance))
+		end
+
 		hrp.CFrame = CFrame.lookAt(hrp.Position, enemy.HumanoidRootPart.Position)
 
 		if Library.Flags.autoM1 and farming() then
-			character.client_character_controller.M1:FireServer(unpack({ true, false }))
+			if Library.Flags.autoSkills then
+				for _, skill in selectedSkills do
+					-- character.client_character_controller.M1:FireServer(unpack({ true, false }))
+				end
+			elseif Library.Flags.autoM1 then
+				character.client_character_controller.M1:FireServer(unpack({ true, false }))
+			end
 		end
 	end
 
@@ -750,23 +768,23 @@ do
 						Name = "Attack From",
 						Flag = "AttackDropdown",
 						Items = { "Above", "Below", "Left", "Right" },
-						Default = "Below",
+						Default = direction,
 						MaxSize = 155,
 						Multi = false,
 						Callback = function(Value)
-							print(Value)
+							direction = Value
 						end,
 					})
 					FarmSettingsSection:Slider({
 						Name = "Farm Distance",
 						Flag = "farmDistanceSlider",
 						Min = 0,
-						Default = 8,
+						Default = distance,
 						Max = 20,
 						Suffix = " studs",
 						Decimals = 1,
 						Callback = function(Value)
-							print(Value)
+							distance = Value
 						end,
 					})
 					FarmSettingsSection:Toggle({
@@ -825,22 +843,20 @@ do
 					})
 					FarmSettingsSection:Dropdown({
 						Name = "Use Skills: ",
-						Flag = "attackDropdown",
+						Flag = "skillsDropdown",
 						Items = { "E", "R", "Z", "X", "C", "V", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" },
 						Default = "",
 						MaxSize = 155,
 						Multi = true,
 						Callback = function(Value)
-							print(Value)
+							selectedSkills = Value
 						end,
 					})
 					FarmSettingsSection:Toggle({
 						Name = "Auto Skills",
 						Flag = "autoSkills",
 						Default = false,
-						Callback = function(Value)
-							print(Value)
-						end,
+						Callback = function() end,
 					})
 				end
 			end
