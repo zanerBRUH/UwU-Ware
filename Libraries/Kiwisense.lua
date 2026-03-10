@@ -2462,6 +2462,7 @@ do
 	end
 
 	Library.LoadConfig = function(self, Config)
+		print("loading file")
 		local Decoded = HttpService:JSONDecode(Config)
 
 		local Success, Result = Library:SafeCall(function()
