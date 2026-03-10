@@ -240,9 +240,9 @@ function autoFarmEnemy(enemy)
 		elseif direction == "Below" then
 			Teleport(enemy.HumanoidRootPart.CFrame * CFrame.new(0, -distance, 0))
 		elseif direction == "Front" then
-			Teleport(enemy.HumanoidRootPart.CFrame * CFrame.new(0, 0, distance))
-		elseif direction == "Back" then
 			Teleport(enemy.HumanoidRootPart.CFrame * CFrame.new(0, 0, -distance))
+		elseif direction == "Back" then
+			Teleport(enemy.HumanoidRootPart.CFrame * CFrame.new(0, 0, distance))
 		end
 
 		hrp.CFrame = CFrame.lookAt(hrp.Position, enemy.HumanoidRootPart.Position)
