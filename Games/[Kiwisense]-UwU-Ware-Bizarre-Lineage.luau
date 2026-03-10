@@ -1,3 +1,4 @@
+print("Library Loading Started")
 local LoadingTick = os.clock()
 local Library = loadstring(
 	game:HttpGet("https://raw.githubusercontent.com/zanerBRUH/UwU-Ware/refs/heads/main/Libraries/Kiwisense.lua")
@@ -76,18 +77,19 @@ local HttpService = game:GetService("HttpService")
 --//Variables
 local plr = Players.LocalPlayer
 if plr:GetAttribute("Loaded") == false or plr:GetAttribute("Loaded") == nil then
-	plr.PlayerGui:WaitForChild("Logo_Loader", 5)
 	repeat
 		task.wait()
-		if plr.PlayerGui:FindFirstChild("Logo_Loader") then
-			continue
-		end
 
 		ReplicatedStorage.requests.character.spawn:FireServer()
+		if plr.PlayerGui:FindFirstChild("Logo_Loader") then
+			plr.Playergui.Logo_Loader:Destroy()
+		end
 		if plr.PlayerGui:FindFirstChild("Main Menu") then
 			plr.PlayerGui["Main Menu"]:Destroy()
 		end
 	until plr:GetAttribute("Loaded") == true
+		and not plr.PlayerGui:FindFirstChild("Logo_Loader")
+		and not plr.PlayerGui:FindFirstChild("Main Menu")
 end
 
 local playerData = plr.PlayerData
