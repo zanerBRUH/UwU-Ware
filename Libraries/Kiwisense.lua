@@ -121,11 +121,11 @@
     )
 ]]
 
-local LoadingTick = os.clock()
-
 if getgenv().Library then
 	getgenv().Library:Unload()
 end
+local queueteleport =
+	missing("function", queue_on_teleport or (syn and syn.queue_on_teleport) or (fluxus and fluxus.queue_on_teleport))
 
 local ESPFonts = {}
 local SelectedESPFont
@@ -1547,7 +1547,7 @@ do
 	Library = {
 		Theme = nil,
 
-		MenuKeybind = tostring(Enum.KeyCode.Z),
+		MenuKeybind = tostring(Enum.KeyCode.LeftAlt),
 		Flags = {},
 
 		Tween = {
@@ -10794,6 +10794,16 @@ do
 				})
 			end
 		end
+
+		local TeleportCheck = false
+		Players.LocalPlayer.OnTeleport:Connect(function()
+			if TeleportCheck == false then
+				TeleportCheck = true
+				queueteleport(
+					"loadstring(game:HttpGet('https://raw.githubusercontent.com/zanerBRUH/UwU-Ware/refs/heads/main/Libraries/Kiwisense.lua'))()"
+				)
+			end
+		end)
 	end
 end
 

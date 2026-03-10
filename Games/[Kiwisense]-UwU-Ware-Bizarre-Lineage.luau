@@ -1,11 +1,11 @@
 print("library")
+local LoadingTick = os.clock()
 local Library = loadstring(
 	game:HttpGet("https://raw.githubusercontent.com/zanerBRUH/UwU-Ware/refs/heads/main/Libraries/Kiwisense.lua")
 )()
 print("after libraryo")
 --
--- Examplek
-local LoadingTick = os.clock()
+--
 local rgb = Color3.fromRGB
 local Options, MiscOptions
 
@@ -81,12 +81,14 @@ if plr:GetAttribute("Loaded") == false or plr:GetAttribute("Loaded") == nil then
 	until plr:GetAttribute("Loaded") == true
 end
 
-local PlayerData = plr.PlayerData
-local SlotData = PlayerData.SlotData
+local playerData = plr.PlayerData
+local slotData = playerData.SlotData
 
 local character = plr.Character or plr.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 local hrp = character:WaitForChild("HumanoidRootPart")
+
+local connections = {}
 
 function Teleport(ChosenCFrame)
 	if typeof(ChosenCFrame) == "Instance" and ChosenCFrame:IsA("Model") then
@@ -103,6 +105,34 @@ end
 
 function GetAttribute(obj, name)
 	return obj:GetAttribute(name)
+end
+
+function find(obj, name)
+	if typeof(obj) == "Instance" and obj:FindFirstChild(name) then
+		return true
+	elseif typeof(obj) == "string" and string.find(obj, name) then
+		return true
+	end
+	return false
+end
+
+function wait(params)
+	for _, v in params do
+		if typeof(v) == "Instance" then
+			params.obj = v
+		elseif typeof(v) == "string" then
+			params.name = v
+		elseif typeof(v) == "number" then
+			params.time = v
+		end
+	end
+
+	params.time = params.time or 0.01
+	if params.obj and params.name then
+		return params.obj:WaitForChild(params.name, params.time)
+	else
+		return task.wait(params.time)
+	end
 end
 
 function farming()
@@ -297,22 +327,25 @@ do
 				local FarmSettingsSection =
 					Subpages["Farms"]:Section({ Name = "Farm Settings", Icon = "103174889897193", Side = 2 })
 				do
-					local trackedQuest = ""
+					local trackedQuest = slotData.TrackedQuest.Value
 					local questLabel = FarmsSection:Label("Tracked Quest: " .. trackedQuest, "Left")
 
-					plr.PlayerData.SlotData.TrackedQuest.Changed:Connect(function() end)
+					plr.PlayerData.SlotData.TrackedQuest.Changed:Connect(function()
+						trackedQuest = slotData.TrackedQuest.Value
+						questLabel:Set("Tracked Quest: " .. trackedQuest)
+					end)
 
 					FarmsSection:Toggle({
 						Name = "Auto Tracked Quest",
 						Flag = "autoTrackedQuest",
 						Default = false,
 						Callback = function(Value)
-							local slotData = plr.PlayerData.SlotData
 							trackedQuest = slotData.TrackedQuest.Value
 							questLabel:Set("Tracked Quest: " .. trackedQuest)
 
 							while Library.Flags.autoTrackedQuest do
 								task.wait()
+								local trackedQuestData
 
 								if trackedQuest ~= slotData.TrackedQuest.Value then
 									trackedQuest = slotData.TrackedQuest.Value
@@ -325,60 +358,53 @@ do
 								end
 								for index, quest in questData do
 									if quest.Name == trackedQuest then
-										trackedQuest = questData[index]
+										trackedQuestData = questData[index]
 										break
 									end
 								end
 
-								if workspace.Effects:FindFirstChild("questbrick") then
+								if find(workspace.Effects, "questbrick") then
 									Teleport(workspace.Effects.questbrick.questbrick.CFrame * CFrame.new(0, 0, 5))
 								end
 
-								if trackedQuest.Talk then
-									for character, completed in trackedQuest.Talk do
+								if trackedQuestData.Talk then
+									for npc, completed in trackedQuestData.Talk do
 										if completed == false then
-											if workspace.Npcs:FindFirstChild(character) then
+											if find(workspace.Npcs, npc) then
 												Teleport(
-													workspace.Npcs[character].HumanoidRootPart.CFrame
-														* CFrame.new(0, 0, -3)
+													workspace.Npcs[npc].HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
 												)
-											elseif ReplicatedStorage.assets.npc_cache:FindFirstChild(character) then
+											elseif find(ReplicatedStorage.assets.npc_cache, npc) then
 												Teleport(
-													ReplicatedStorage.assets.npc_cache[character].HumanoidRootPart.CFrame
+													ReplicatedStorage.assets.npc_cache[npc].HumanoidRootPart.CFrame
 														* CFrame.new(0, 0, -3)
 												)
 											end
 											ReplicatedStorage.requests.character.dialogue:FireServer(unpack({
-												workspace.Npcs:WaitForChild(character, 10),
+												wait({ workspace.Npcs, npc, 10 }),
 												1,
 											}))
-											task.wait(1)
+											wait({ 1 })
 										end
 									end
 								end
 
-								if trackedQuest.Kills then
-									for enemy, amount in trackedQuest.Kills do
+								if trackedQuestData.Kills then
+									for enemy, _amount in trackedQuestData.Kills do
 										local complete = false
 										for _, obj in
 											plr.PlayerGui.menu.task_holder.holder.newobjective.ScrollingFrame.holder:GetChildren()
 										do
 											if
-												(
-													obj:FindFirstChild("TextLabel")
-													and string.find(obj.TextLabel.Text, "Defeat " .. enemy)
-												)
+												(find(obj, "TextLabel") and find(obj.TextLabel.Text, "Defeat" .. enemy))
 												or (
-													obj:FindFirstChild("text")
-													and string.find(obj.text.TextLabel.Text, "Defeat " .. enemy)
+													find(obj, "text")
+													and find(obj.text.TextLabel.Text, "Defeat " .. enemy)
 												)
 											then
 												if
-													(obj:FindFirstChild("Frame") and obj.Frame.finished.Visible == true)
-													or (
-														obj:FindFirstChild("text")
-														and obj.text.Frame.finished.Visible == true
-													)
+													(find(obj, "Frame") and obj.Frame.finished.Visible == true)
+													or (find(obj, "text") and obj.text.Frame.finished.Visible == true)
 												then
 													complete = true
 												end
@@ -392,30 +418,28 @@ do
 										end
 										if enemy == "The Self" then
 											for _, liveEnemy in workspace.Live:GetChildren() do
-												if liveEnemy:GetAttribute("Display Name") == enemy then
+												if GetAttribute(liveEnemy, "Display Name") then
 													autoFarmEnemy(liveEnemy)
 													break
 												end
 											end
 
-											if workspace.Npcs:WaitForChild(enemy, 5) then
+											if wait({ workspace.Npcs, enemy, 5 }) then
 												ReplicatedStorage.requests.character.dialogue:FireServer(unpack({
-													workspace.Npcs:WaitForChild(enemy, 10),
+													wait({ workspace.Npcs, enemy, 10 }),
 													1,
 												}))
 												ReplicatedStorage.requests.character.dialogue:FireServer(unpack({
-													workspace.Npcs:WaitForChild(enemy, 10),
+													wait({ workspace.Npcs, enemy, 10 }),
 													"Yes.",
 												}))
 											else
-												if workspace.Npcs:FindFirstChild("Meditation") then
+												if find(workspace.Npcs, "Meditation") then
 													Teleport(
 														workspace.Npcs["Meditation"].HumanoidRootPart.CFrame
 															* CFrame.new(0, 0, -3)
 													)
-												elseif
-													ReplicatedStorage.assets.npc_cache:FindFirstChild("Meditation")
-												then
+												elseif find(ReplicatedStorage.assets.npc_cache, "Meditation") then
 													Teleport(
 														ReplicatedStorage.assets.npc_cache["Meditation"].HumanoidRootPart.CFrame
 															* CFrame.new(0, 0, -3)
@@ -423,11 +447,11 @@ do
 													task.wait(5)
 												end
 												ReplicatedStorage.requests.character.dialogue:FireServer(unpack({
-													workspace.Npcs:WaitForChild("Meditation", 10),
+													wait({ workspace.Npcs, "Meditation", 10 }),
 													1,
 												}))
 												ReplicatedStorage.requests.character.dialogue:FireServer(unpack({
-													workspace.Npcs:WaitForChild("Meditation", 10),
+													wait({ workspace.Npcs, "Meditation", 10 }),
 													"Meditate.",
 												}))
 											end
@@ -442,9 +466,9 @@ do
 									end
 								end
 
-								if trackedQuest.TurnInItems then
+								if trackedQuestData.TurnInItems then
 									local inventoryData = HttpService:JSONDecode(slotData.Inventory.Value)
-									for neededItems, amount in trackedQuest.TurnInItems do
+									for neededItems, amount in trackedQuestData.TurnInItems do
 										for _, item in inventoryData do
 											if item.Name == neededItems and item.Amount >= amount then
 												for _, obj in
@@ -505,7 +529,7 @@ do
 									end
 								end
 
-								if trackedQuest.GangContracts then
+								if trackedQuestData.GangContracts then
 									if workspace.Npcs:FindFirstChild("Gang Contractor") then
 										Teleport(
 											workspace.Npcs["Gang Contractor"].HumanoidRootPart.CFrame
@@ -559,6 +583,13 @@ do
 								end
 							end
 							print(Value)
+						end,
+					})
+					FarmsSection:Button({
+						Name = "TP to Tracked Quest",
+						Flag = "TPTrackedButton",
+						Callback = function()
+							Teleport(workspace.Effects.questbrick.questbrick.CFrame * CFrame.new(0, 0, 5))
 						end,
 					})
 					FarmsSection:Toggle({
@@ -712,16 +743,38 @@ do
 						Name = "Auto Sell",
 						Flag = "autoSell",
 						Default = false,
-						Callback = function(Value)
-							print(Value)
+						Callback = function()
+							if Library.Flags.autoSell then
+								autoSell()
+								connections["autoSell"] = slotData.Inventory.Changed:Connect(function()
+									autoSell()
+								end)
+							else
+								if connections["autoSell"] then
+									connections["autoSell"]:Disconnect()
+								end
+								connections["autoSell"] = nil
+								return
+							end
 						end,
 					})
 					ItemsSection:Toggle({
 						Name = "Auto Open Chests",
 						Flag = "autoOpenChests",
 						Default = false,
-						Callback = function(Value)
-							print(Value)
+						Callback = function()
+							if Library.Flags.autoOpenChests then
+								openChests()
+								connections["autoOpenChests"] = slotData.Inventory.Changed:Connect(function()
+									openChests()
+								end)
+							else
+								if connections["autoOpenChests"] then
+									connections["autoOpenChests"]:Disconnect()
+								end
+								connections["autoOpenChests"] = nil
+								return
+							end
 						end,
 					})
 					ItemsSection:Toggle({
