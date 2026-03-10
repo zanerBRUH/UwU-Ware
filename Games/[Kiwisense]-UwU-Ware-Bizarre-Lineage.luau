@@ -238,7 +238,6 @@ function autoFarmEnemy(enemy)
 			character.client_character_controller.SummonStand:FireServer()
 		end
 
-		print(direction, distance)
 		if direction == "Above" then
 			Teleport(enemy.HumanoidRootPart.CFrame * CFrame.new(0, distance, 0))
 		elseif direction == "Below" then
@@ -251,7 +250,7 @@ function autoFarmEnemy(enemy)
 
 		hrp.CFrame = CFrame.lookAt(hrp.Position, enemy.HumanoidRootPart.Position)
 
-		if Library.Flags.autoM1 and farming() then
+		if farming() then
 			if Library.Flags.autoSkills then
 				for _, skill in selectedSkills do
 					character.client_character_controller.Skill:FireServer(unpack({ skill, true }))
