@@ -158,6 +158,8 @@ end
 function farming()
 	if Library.Flags.autoTrackedQuest == true then
 		return true
+	elseif Library.Flags.autoRaid == true then
+		return true
 	elseif Library.Flags.autoPvEBoard == true then
 		return true
 	elseif Library.Flags.autoGangContracts == true then
@@ -659,7 +661,6 @@ do
 						Callback = function()
 							if Library.Flags.autoRaid then
 								connections["autoRaid"] = task.spawn(function()
-									print("Raid func")
 									if game.PlaceId ~= 74747090658891 then
 										return
 									end
