@@ -2504,8 +2504,8 @@ do
 	end
 
 	Library.SaveConfig = function(self, Config)
-		if isfile(Library.Folders.Configs .. "/" .. Config .. ".json") then
-			writefile(Library.Folders.Configs .. "/" .. Config .. ".json", Library:GetConfig())
+		if isfile(Config) then
+			writefile(Config, Library:GetConfig())
 			Library:Notification({
 				Name = "Success",
 				Description = "Succesfully saved config: " .. Config .. ".json",

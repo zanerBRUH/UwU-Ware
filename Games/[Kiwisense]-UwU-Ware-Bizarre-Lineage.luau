@@ -1143,8 +1143,8 @@ do
 						Name = "delete",
 						Callback = function()
 							if ConfigSelected then
-								print(Library.Folders.Configs .. "/" .. ConfigSelected)
-								print(isfile(Library.Folders.Configs .. "/" .. ConfigSelected))
+								print(ConfigSelected)
+								print(isfile(ConfigSelected))
 								Library:DeleteConfig(ConfigSelected)
 								Library:RefreshConfigsList(ConfigsDropdown)
 							end
@@ -1193,6 +1193,7 @@ do
 						Name = "save",
 						Callback = function()
 							if ConfigSelected then
+								print(ConfigSelected)
 								Library:SaveConfig(ConfigSelected)
 							end
 						end,
