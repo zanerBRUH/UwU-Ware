@@ -108,6 +108,7 @@ local StandsList = {}
 local selectedStands = {}
 local selectedGrabItems = {}
 local selectedSkills = {}
+local selectedSellItems = {}
 local distance = 8
 local direction = "Bottom"
 local standData = HttpService:JSONDecode(slotData.Stand.Value)
@@ -279,32 +280,24 @@ end
 
 function autoSell()
 	local selling = {}
-	local sellNames = {
-		"White Jacket",
-		"Grey Jacket",
-		"Balaclava",
-		"Arm Wraps",
-		"Shades",
-		"Black Jacket",
-		"Plain White Scarf",
-		"Hood",
-		"Simple Cape",
-		"Mask",
-		"Head Goggles",
-		"Biker Chain",
-		"Red Topcoat",
-		"Green Ripped Jacket",
-		"White Ripped Jacket",
-		"Face Goggles",
-		"Eye Patch",
-		"Grey Topcoat",
-		"White Topcoat",
-		"Baseball Cap",
-		"Gold Crown",
-	}
+
 	local data = HttpService:JSONDecode(slotData.Inventory.Value)
+	local equippedData = HttpService:JSONDecode(slotData.EquippedAccessories.Value)
 	for _, item in data do
-		if table.find(sellNames, item.Name) then
+		local itemEquipped = false
+		if item.ID then
+			for __, equipped in equippedData do
+				if equipped.ID == item.ID then
+					itemEquipped = true
+					break
+				end
+			end
+		end
+		if itemEquipped == true then
+			return
+		end
+
+		if table.find(selectedSellItems, item.Name) then
 			item.duplicates = 1
 			print(item.ID, item.Name, item.Pips, item.duplicates)
 			table.insert(selling, item)
@@ -994,23 +987,44 @@ do
 							selectedStands = selected
 						end,
 					})
+					local items = {}
+					for _, item in ReplicatedStorage.assets.models.items:GetChildren() do
+						if item.Name ~= "Weapons" and not table.find(items, item.Name) then
+							table.insert(items, item.Name)
+						end
+					end
+					for _, item in ReplicatedStorage.assets.models.items.Weapons:GetChildren() do
+						if item.Name ~= "Weapons" and not table.find(items, item.Name) then
+							table.insert(items, item.Name)
+						end
+					end
+					for _, item in ReplicatedStorage.assets.models.accessories:GetChildren() do
+						if item.Name ~= "Weapons" and not table.find(items, item.Name) then
+							table.insert(items, item.Name)
+						end
+					end
+
 					ItemSettingsSection:Dropdown({
 						Name = "Sell List: ",
 						Flag = "sellDropdown",
-						Items = {},
+						Items = items,
 						Default = "",
 						MaxSize = 155,
 						Multi = true,
-						Callback = function(selected) end,
+						Callback = function(selected)
+							selectedSellItems = selected
+						end,
 					})
 					ItemSettingsSection:Dropdown({
 						Name = "Item List: ",
 						Flag = "itemDropdown",
-						Items = {},
+						Items = { "Stand Arrow", "Stone Mask" },
 						Default = "",
 						MaxSize = 155,
 						Multi = true,
-						Callback = function(selected) end,
+						Callback = function(selected)
+							selectedGrabItems = selected
+						end,
 					})
 				end
 			end
