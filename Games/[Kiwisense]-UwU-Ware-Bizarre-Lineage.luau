@@ -76,6 +76,7 @@ local HttpService = game:GetService("HttpService")
 
 --//Variables
 local plr = Players.LocalPlayer
+local loadTick = tick()
 if plr:GetAttribute("Loaded") == false or plr:GetAttribute("Loaded") == nil then
 	if game.PlaceId == 74747090658891 then
 		task.wait(15)
@@ -91,9 +92,11 @@ if plr:GetAttribute("Loaded") == false or plr:GetAttribute("Loaded") == nil then
 		if plr.PlayerGui:FindFirstChild("Main Menu") then
 			plr.PlayerGui["Main Menu"]:Destroy()
 		end
-	until plr:GetAttribute("Loaded") == true
-		and not plr.PlayerGui:FindFirstChild("Logo_Loader")
-		and not plr.PlayerGui:FindFirstChild("Main Menu")
+	until (
+			plr:GetAttribute("Loaded") == true
+			and not plr.PlayerGui:FindFirstChild("Logo_Loader")
+			and not plr.PlayerGui:FindFirstChild("Main Menu")
+		) or tick() - loadTick >= 20
 end
 
 local playerData = plr.PlayerData
