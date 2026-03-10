@@ -1143,6 +1143,8 @@ do
 						Name = "delete",
 						Callback = function()
 							if ConfigSelected then
+								print(Library.Folders.Configs .. "/" .. ConfigSelected)
+								print(isfile(Library.Folders.Configs .. "/" .. ConfigSelected))
 								Library:DeleteConfig(ConfigSelected)
 								Library:RefreshConfigsList(ConfigsDropdown)
 							end
@@ -1153,6 +1155,7 @@ do
 						Name = "load",
 						Callback = function()
 							if ConfigSelected then
+								print("loading file " .. ConfigSelected)
 								local Success, Result =
 									Library:LoadConfig(readfile(Library.Folders.Configs .. "/" .. ConfigSelected))
 
