@@ -223,6 +223,14 @@ function autoFarmEnemy(enemy)
 			until tick() - dodgeTick > 2
 		end
 
+		if
+			(GetAttribute(character, "SummonedStand") == nil or GetAttribute(character, "SummonedStand") == "")
+			and farming() == true
+			and Library.Flags.autoSummonStand
+		then
+			character.client_character_controller.SummonStand:FireServer()
+		end
+
 		Teleport(enemy.HumanoidRootPart.CFrame * CFrame.new(0, -8, 0))
 		hrp.CFrame = CFrame.lookAt(hrp.Position, enemy.HumanoidRootPart.Position)
 
@@ -765,26 +773,40 @@ do
 						Name = "Auto Summon Stand",
 						Flag = "autoSummonStand",
 						Default = false,
-						Callback = function(Value)
+						Callback = function()
 							if
 								(
 									GetAttribute(character, "SummonedStand") == nil
 									or GetAttribute(character, "SummonedStand") == ""
-								) and farming() == true
+								)
+								and farming() == true
+								and Library.Flags.autoSummonStand
 							then
 								character.client_character_controller.SummonStand:FireServer()
 							end
 
-							character:GetAttributeChangedSignal("SummonedStand"):Connect(function()
-								if
-									(
-										GetAttribute(character, "SummonedStand") == nil
-										or GetAttribute(character, "SummonedStand") == ""
-									) and farming() == true
-								then
-									character.client_character_controller.SummonStand:FireServer()
+							connections["autoSummonStand"] = character
+								:GetAttributeChangedSignal("SummonedStand")
+								:Connect(function()
+									if
+										(
+											GetAttribute(character, "SummonedStand") == nil
+											or GetAttribute(character, "SummonedStand") == ""
+										)
+										and farming() == true
+										and Library.Flags.autoSummonStand
+									then
+										character.client_character_controller.SummonStand:FireServer()
+									end
+								end)
+
+							if not Library.Flags.autoSummonStand then
+								character.client_character_controller.SummonStand:FireServer()
+								if connections["autoSummonStand"] then
+									connections["autoSummonStand"]:Disconnect()
 								end
-							end)
+								connections["autoSummonStand"] = nil
+							end
 						end,
 					})
 					FarmSettingsSection:Toggle({
