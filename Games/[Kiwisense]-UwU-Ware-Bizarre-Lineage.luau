@@ -2,6 +2,17 @@ local LoadingTick = os.clock()
 local Library = loadstring(
 	game:HttpGet("https://raw.githubusercontent.com/zanerBRUH/UwU-Ware/refs/heads/main/Libraries/Kiwisense.lua")
 )()
+
+function missing(t, f, fallback)
+	if type(f) == t then
+		return f
+	end
+	return fallback
+end
+
+queueteleport =
+	missing("function", queue_on_teleport or (syn and syn.queue_on_teleport) or (fluxus and fluxus.queue_on_teleport))
+
 --
 --
 local rgb = Color3.fromRGB
@@ -1249,6 +1260,16 @@ do
 		end
 	end
 end
+
+local TeleportCheck = false
+Players.LocalPlayer.OnTeleport:Connect(function()
+	if TeleportCheck == false then
+		TeleportCheck = true
+		queueteleport(
+			"loadstring(game:HttpGet('https://raw.githubusercontent.com/zanerBRUH/UwU-Ware/refs/heads/main/Libraries/Kiwisense.lua'))()"
+		)
+	end
+end)
 
 Library:Notification({
 	Name = "Loaded",
