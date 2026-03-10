@@ -690,6 +690,7 @@ do
 							if Library.Flags.autoRaid then
 								connections["autoRaid"] = task.spawn(function()
 									if game.PlaceId ~= 74747090658891 then
+										FarmsSection.Items[4]:Set(false)
 										return
 									end
 									while Library.Flags.autoRaid do
