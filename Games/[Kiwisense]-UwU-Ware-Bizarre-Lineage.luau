@@ -250,9 +250,11 @@ function autoFarmEnemy(enemy)
 		if Library.Flags.autoM1 and farming() then
 			if Library.Flags.autoSkills then
 				for _, skill in selectedSkills do
-					-- character.client_character_controller.M1:FireServer(unpack({ true, false }))
+					character.client_character_controller.Skill:FireServer(unpack({ skill, true }))
+					character.client_character_controller.Skill:FireServer(unpack({ skill, false }))
 				end
-			elseif Library.Flags.autoM1 then
+			end
+			if Library.Flags.autoM1 then
 				character.client_character_controller.M1:FireServer(unpack({ true, false }))
 			end
 		end
