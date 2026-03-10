@@ -293,8 +293,8 @@ function autoSell()
 				end
 			end
 		end
-		if itemEquipped == true then
-			return
+		if itemEquipped == true or item.Locked and item.Locked == true then
+			continue
 		end
 
 		if table.find(selectedSellItems, item.Name) then
@@ -443,7 +443,7 @@ do
 									end
 
 									if find(workspace.Effects, "questbrick") then
-										Teleport(workspace.Effects.questbrick.questbrick.CFrame * CFrame.new(0, 0, 5))
+										Teleport(workspace.Effects.questbrick.questbrick.CFrame * CFrame.new(0, 0, -5))
 									end
 
 									if trackedQuestData.Talk then
@@ -676,7 +676,7 @@ do
 						Name = "TP to Tracked Quest",
 						Flag = "TPTrackedButton",
 						Callback = function()
-							Teleport(workspace.Effects.questbrick.questbrick.CFrame * CFrame.new(0, 0, 5))
+							Teleport(workspace.Effects.questbrick.questbrick.CFrame * CFrame.new(0, 0, -5))
 						end,
 					})
 					FarmsSection:Toggle({
@@ -1009,7 +1009,7 @@ do
 						Flag = "sellDropdown",
 						Items = items,
 						Default = "",
-						MaxSize = 155,
+						MaxSize = 300,
 						Multi = true,
 						Callback = function(selected)
 							selectedSellItems = selected
